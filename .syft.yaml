@@ -1,0 +1,6 @@
+# The SBOM describes what ships: runtime Python dependencies only. Dev/test
+# requirements and CI actions are build tooling, not part of the artifact.
+exclude:
+  - ./requirements-dev.txt
+  - ./tests/**
+  - ./.github/**
