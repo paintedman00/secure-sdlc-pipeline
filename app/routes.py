@@ -4,6 +4,9 @@ from .db import get_db
 
 bp = Blueprint("api", __name__)
 
+MAX_USERNAME_LEN = 32
+MAX_EMAIL_LEN = 254
+
 
 def _row_to_dict(row):
     return {"id": row["id"], "username": row["username"], "email": row["email"]}
@@ -31,6 +34,10 @@ def create_user():
     email = data.get("email")
     if not isinstance(username, str) or not isinstance(email, str):
         return jsonify(error="username and email are required strings"), 400
+    if not 0 < len(username) <= MAX_USERNAME_LEN:
+        return jsonify(error=f"username must be 1-{MAX_USERNAME_LEN} characters"), 400
+    if not 0 < len(email) <= MAX_EMAIL_LEN:
+        return jsonify(error=f"email must be 1-{MAX_EMAIL_LEN} characters"), 400
 
     conn = get_db()
     try:

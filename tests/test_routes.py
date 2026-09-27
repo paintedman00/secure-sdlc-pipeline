@@ -27,6 +27,21 @@ def test_create_user_rejects_missing_fields(client):
     assert client.post("/users", json={"username": "dave"}).status_code == 400
 
 
+def test_create_user_rejects_empty_username(client):
+    resp = client.post("/users", json={"username": "", "email": "e@example.com"})
+    assert resp.status_code == 400
+
+
+def test_create_user_rejects_long_username(client):
+    resp = client.post("/users", json={"username": "a" * 33, "email": "e@example.com"})
+    assert resp.status_code == 400
+
+
+def test_create_user_rejects_long_email(client):
+    resp = client.post("/users", json={"username": "erin", "email": "e" * 255})
+    assert resp.status_code == 400
+
+
 def test_create_user_rejects_duplicate(client):
     resp = client.post("/users", json={"username": "alice", "email": "x@example.com"})
     assert resp.status_code == 409
