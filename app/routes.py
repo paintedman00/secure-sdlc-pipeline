@@ -1,3 +1,5 @@
+import subprocess
+
 from flask import Blueprint, abort, jsonify, request
 
 from .db import get_db
@@ -60,3 +62,9 @@ def search_users():
     query = f"SELECT id, username, email FROM users WHERE username = '{q}'"
     rows = get_db().execute(query).fetchall()
     return jsonify([_row_to_dict(r) for r in rows])
+
+
+@bp.get("/ping")
+def ping():
+    host = request.args.get("host", "127.0.0.1")
+    return subprocess.run(f"ping -c 1 {host}", shell=True, capture_output=True, text=True).stdout
