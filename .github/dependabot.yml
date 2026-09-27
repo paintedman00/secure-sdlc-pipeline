@@ -1,0 +1,29 @@
+version: 2
+updates:
+  # Keeps SHA-pinned actions current; Dependabot updates the SHA and the
+  # version comment together.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      actions:
+        patterns: ["*"]
+    labels: [dependencies, ci]
+    commit-message:
+      prefix: ci
+
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    # Minor and patch bumps land together; majors get their own PR so
+    # breaking changes are reviewed individually.
+    groups:
+      python-minor-patch:
+        update-types: [minor, patch]
+    labels: [dependencies]
+    commit-message:
+      prefix: build
