@@ -4,6 +4,10 @@ from app import create_app
 
 
 @pytest.fixture
-def client(tmp_path):
-    app = create_app({"TESTING": True, "DATABASE": str(tmp_path / "test.sqlite")})
+def app(tmp_path):
+    return create_app({"TESTING": True, "DATABASE": str(tmp_path / "test.sqlite")})
+
+
+@pytest.fixture
+def client(app):
     return app.test_client()

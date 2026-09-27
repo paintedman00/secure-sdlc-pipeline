@@ -1,3 +1,6 @@
+from app import create_app
+
+
 def test_health(client):
     resp = client.get("/health")
     assert resp.status_code == 200
@@ -38,3 +41,10 @@ def test_search_is_injectable(client):
     # Documents the intentional flaw: a tautology payload dumps the whole table.
     resp = client.get("/search", query_string={"q": "' OR '1'='1"})
     assert len(resp.get_json()) == 3
+
+
+def test_restart_keeps_existing_users(app, client):
+    client.post("/users", json={"username": "dave", "email": "dave@example.com"})
+    restarted = create_app({"TESTING": True, "DATABASE": app.config["DATABASE"]})
+    resp = restarted.test_client().get("/search", query_string={"q": "dave"})
+    assert len(resp.get_json()) == 1

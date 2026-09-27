@@ -3,8 +3,7 @@ import sqlite3
 from flask import current_app, g
 
 SCHEMA = """
-DROP TABLE IF EXISTS users;
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE NOT NULL,
     email TEXT NOT NULL
@@ -34,8 +33,11 @@ def close_db(exc=None):
 def init_db():
     conn = get_db()
     conn.executescript(SCHEMA)
-    conn.executemany("INSERT INTO users (username, email) VALUES (?, ?)", SEED_USERS)
-    conn.commit()
+    if conn.execute("SELECT COUNT(*) FROM users").fetchone()[0] == 0:
+        conn.executemany(
+            "INSERT INTO users (username, email) VALUES (?, ?)", SEED_USERS
+        )
+        conn.commit()
 
 
 def init_app(app):
